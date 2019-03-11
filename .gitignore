@@ -1,0 +1,5 @@
+demo.yml
+hosts
+ssh_cfg
+ansible.cfg
+ansible

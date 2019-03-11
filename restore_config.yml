@@ -1,0 +1,26 @@
+---
+- name: RESTORE CONFIGURATION
+  hosts: cisco
+  connection: network_cli
+  gather_facts: no
+
+  tasks:
+    - name: Gather facts (ops)
+      ios_facts:
+      when: ansible_network_os == 'ios'
+   
+    - name: Setting fact with inventory hostname 
+      set_fact:
+        dest_host: "{{ hostvars[inventory_hostname].ansible_host }}" 
+
+    - name: print new fact 
+      debug:
+        var: dest_host
+
+    - name: COPY RUNNING CONFIG TO ROUTER
+      command: scp ./backup/{{inventory_hostname}}.config {{dest_host}}:/{{inventory_hostname}}.config
+
+    - name: CONFIG REPLACE
+      ios_command:
+        commands:
+          - config replace flash:{{inventory_hostname}}.config force
