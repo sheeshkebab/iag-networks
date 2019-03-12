@@ -46,15 +46,12 @@
         regexp: 'Current configuration.*'
         state: absent  
 
-    - set_fact:
-        gitpush_host: "{{ ansible_host }}"
-
-    - name: ADD BACKUP TO VERSION CONTROL
+    - name: ADD BACKUP FILE TO VERSION CONTROL
       copy:
         src: "./{{router_backup_dir}}/{{inventory_hostname}}.config" 
         dest: "{{ git_checkout_location }}"
 
-- name: Push the contents back up into the remote
+- name: Push the contents back up into the remote repo
   hosts: cisco 
   gather_facts: no
   vars:

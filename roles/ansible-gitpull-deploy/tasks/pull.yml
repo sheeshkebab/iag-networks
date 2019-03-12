@@ -5,6 +5,12 @@
     path: "{{ git_checkout_location }}/.git"
   register: git_remote_repo_stat
 
+- name: Clean existing repo location 
+  file:
+    state: absent
+    path: "{{ git_checkout_location }}/"
+  when: git_remote_repo_stat.stat.exists 
+
 - name: Clone repo
   git:
     repo: "{{ git_remote_repo_path }}"
