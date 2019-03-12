@@ -2,7 +2,7 @@
 
 - name: Does our repo already exist locally?
   stat:
-    path: "/tmp/{{ gitpush_local_repo_path }}"
+    path: "{{ git_checkout_location }}/.git"
   register: git_remote_repo_stat
 
 - name: Clone repo
@@ -10,43 +10,3 @@
     repo: "{{ git_remote_repo_path }}"
     dest: "{{ git_checkout_location }}"
 
-#- name: Clone that repo!
-#  local_action: "command cd /tmp && git clone \"{{ git_remote_repo_path }}\""
-#  #changed_when: response.stderr != "Receiving objects\: 100\% (3/3), done."
-#  register: response
-  # We never use "become" on this local action because we're on the control machine and become_user
-  # is probably a user that doesn't exist!
-#  become: no
-#  notify: "{{ notify }}"
-#  when: not git_remote_repo_stat.stat.exists
-
-#- name: Update the repo!
-#  local_action: "command git --git-dir=/tmp/iag-configs/.git/ --work-tree=/tmp/iag-configs fetch -vv"
-#  changed_when: response.stderr != " = [up to date]      master     -> origin/master"
-#  register: response
-  # We never use "become" on this local action because we're on the control machine and become_user
-  # is probably a user that doesn't exist!
-  #become: no
-  #notify: "{{ notify }}"
-  #when: not git_remote_repo_stat.stat.exists
-
-# Steps below are to ensure that our git repo has the proper owner. If we run this role as "become",
-# the push step above will not be done as the proper user and will result in incorrect ownership of
-# the repo.
-
-# Our trick here is to run "whoami" and see if it's the same user as ansible_user. If it's not,
-# then we're under "become" and we need to chown. We suppose that we become from a superuser and
-# that we have the right to perform that chowning.
-#- name: whoami?
-#  command: whoami
-#  register: whoami_result
-#  changed_when: no
-
-#- name: Fix repo permissions
-#  file:
-#    path: "{{ item }}"
-#    owner: "{{ whoami_result.stdout }}"
-#  with_items:
-#    - "{{ gitpush_repo_path }}"
-#    - "{{ gitpush_workdir_path }}"
-#  when: gitpush_user and whoami_result.stdout != gitpush_user
