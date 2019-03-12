@@ -13,7 +13,7 @@
     gitpush_additional_params: '--force'
     notify: null
     router_backup_dir: backup 
-    git_remote_repo_path: 'git@gitlab.etgredhat.com.au:ansible/iag-configs.git' 
+    git_remote_repo_path: 'git@github.com:sheeshkebab/iag-networks.git' 
     git_checkout_location: /tmp/iag-configs
 
   roles:
@@ -66,6 +66,7 @@
     gitpush_user: ansible
     notify: null
     git_checkout_location: /tmp/iag-configs
+    git_remote_repo_path: 'git@github.com:sheeshkebab/iag-configs.git'
 
   roles:
     - role: ansible-gitpush-deploy
