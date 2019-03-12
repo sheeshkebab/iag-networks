@@ -1,2 +1,3 @@
 ---
+- include: repoconf.yml
 - include: pull.yml
