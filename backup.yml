@@ -3,26 +3,69 @@
   hosts: cisco
   connection: network_cli
   gather_facts: no
+  vars:
+    gitpush_ssh_keys: []
+    gitpush_local_repo_path: iag-configs/.git
+    gitpush_repo_path: iag-configs
+    gitpush_workdir_path: /var/tmp/backups
+    become: false
+    gitpush_user: ansible
+    gitpush_additional_params: '--force'
+    notify: null
+    router_backup_dir: backup 
+    git_remote_repo_path: 'git@gitlab.etgredhat.com.au:ansible/iag-configs.git' 
+    git_checkout_location: /tmp/iag-configs
+
+  roles:
+    - role: ansible-gitpull-deploy
 
   tasks:
+
     - name: BACKUP THE CONFIG
       ios_config:
         backup: yes
+        #backup_options:
+        #  filename: backup.cfg
+        #  dir_path: "./{{router_backup_dir}}"
       register: config_output
 
     - name: RENAME BACKUP
       copy:
         src: "{{config_output.backup_path}}"
-        dest: "./backup/{{inventory_hostname}}.config"
+        dest: "./{{router_backup_dir}}/{{inventory_hostname}}.config"
 
     - name: REMOVE NON CONFIG LINES
       lineinfile:
-        path: "./backup/{{inventory_hostname}}.config"
+        path: "./{{router_backup_dir}}/{{inventory_hostname}}.config"
         line: "Building configuration..."
         state: absent
 
     - name: REMOVE NON CONFIG LINES - REGEXP
       lineinfile:
-        path: "./backup/{{inventory_hostname}}.config"
+        path: "./{{router_backup_dir}}/{{inventory_hostname}}.config"
         regexp: 'Current configuration.*'
         state: absent  
+
+    - set_fact:
+        gitpush_host: "{{ ansible_host }}"
+
+    - name: ADD BACKUP TO VERSION CONTROL
+      copy:
+        src: "./{{router_backup_dir}}/{{inventory_hostname}}.config" 
+        dest: "{{ git_checkout_location }}"
+
+- name: Push the contents back up into the remote
+  hosts: cisco 
+  gather_facts: no
+  vars:
+    gitpush_ssh_keys: []
+    gitpush_local_repo_path: iag-configs/.git
+    gitpush_repo_path: /tmp/iag-configs/.git
+    gitpush_workdir_path: /tmp/iag-configs
+    become: false
+    gitpush_user: ansible
+    notify: null
+    git_checkout_location: /tmp/iag-configs
+
+  roles:
+    - role: ansible-gitpush-deploy

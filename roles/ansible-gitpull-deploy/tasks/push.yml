@@ -1,0 +1,47 @@
+---
+
+# In some cases (no all, apparently, but anyway, see https://github.com/ansible/ansible/issues/16139),
+# ansible_host under a local_action becomes localhost and we don't want that. To work around this,
+# we set another variable here, outside the local_action.
+- set_fact:
+    gitpush_host: "{{ ansible_host }}"
+
+- name: Ensure that we can gitpush as the user
+  authorized_key:
+    user: "{{ gitpush_user }}"
+    state: present
+    key: "{{ item_key }}"
+  with_items: "{{ gitpush_ssh_keys }}"
+  loop_control:
+    loop_var: item_key
+
+- name: Push that repo!
+  local_action: "command git --git-dir=\"{{ playbook_dir }}/{{ gitpush_local_repo_path }}\" push \"{{ gitpush_user|default(ansible_user) }}{% if gitpush_user %}@{% endif %}{{ gitpush_host }}:{{ gitpush_repo_path }}\" HEAD:master {{ gitpush_additional_params }}"
+  changed_when: response.stderr != "Everything up-to-date"
+  register: response
+  # We never use "become" on this local action because we're on the control machine and become_user
+  # is probably a user that doesn't exist!
+  become: no
+  notify: "{{ notify }}"
+
+# Steps below are to ensure that our git repo has the proper owner. If we run this role as "become",
+# the push step above will not be done as the proper user and will result in incorrect ownership of
+# the repo.
+#
+# Our trick here is to run "whoami" and see if it's the same user as ansible_user. If it's not,
+# then we're under "become" and we need to chown. We suppose that we become from a superuser and
+# that we have the right to perform that chowning.
+- name: whoami?
+  command: whoami
+  register: whoami_result
+  changed_when: no
+
+- name: Fix repo permissions
+  file:
+    path: "{{ item }}"
+    owner: "{{ whoami_result.stdout }}"
+  with_items:
+    - "{{ gitpush_repo_path }}"
+    - "{{ gitpush_workdir_path }}"
+
+  when: gitpush_user and whoami_result.stdout != gitpush_user

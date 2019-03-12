@@ -1,0 +1,8 @@
+gitpush_ssh_keys: []
+gitpush_local_repo_path: backup
+gitpush_user: ansible
+gitpush_repo_path: git@gitlab.etgredhat.com.au:ansible/iag-configs.git
+gitpush_additional_params: '--force'
+gitpush_user: ''
+notify: null
+

@@ -1,0 +1,32 @@
+---
+# Path of the bare repo we push to
+gitpush_repo_path: ''
+
+# Path of the workdir we checkout our pushes to
+gitpush_workdir_path: ''
+
+# Path of the repo to push. This is a path *local* to the control machine.
+# This should either be an absolute path or a path relative to {{ playbook_dir }}.
+# Also, this is a path to the *.git* folder, so your path should normally end with "/.git".
+gitpush_local_repo_path: 'iag-configs'
+
+# Additional params to pass to git push. `--force` by default, but can be something else.
+gitpush_additional_params: '--force'
+
+# if set, the path to touch after each push. That path will be touched with "-r gitpush_repo_path"
+# which means that its mtime will be kept in sync with our git repo's mtime.
+# Use this option if you have some kind of "touch-reload" mechanism on your app.
+gitpush_touch_path: ''
+
+# notify signal
+notify: null
+
+# The user to use for the gitpush SSH connection. If this is not specified, it will use
+# the ansible_user.
+gitpush_user: ''
+
+# The list of ssh_keys to use for the gitpush_ssh connection
+gitpush_ssh_keys: []
+
+# A remote repo location for use within the pull playbook
+git_remote_repo_path: ''
