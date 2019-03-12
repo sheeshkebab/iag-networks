@@ -37,17 +37,16 @@
 # Our trick here is to run "whoami" and see if it's the same user as ansible_user. If it's not,
 # then we're under "become" and we need to chown. We suppose that we become from a superuser and
 # that we have the right to perform that chowning.
-- name: whoami?
-  command: whoami
-  register: whoami_result
-  changed_when: no
+#- name: whoami?
+#  command: whoami
+#  register: whoami_result
+#  changed_when: no
 
-- name: Fix repo permissions
-  file:
-    path: "{{ item }}"
-    owner: "{{ whoami_result.stdout }}"
-  with_items:
-    - "{{ gitpush_repo_path }}"
-    - "{{ gitpush_workdir_path }}"
-
-  when: gitpush_user and whoami_result.stdout != gitpush_user
+#- name: Fix repo permissions
+#  file:
+#    path: "{{ item }}"
+#    owner: "{{ whoami_result.stdout }}"
+#  with_items:
+#    - "{{ gitpush_repo_path }}"
+#    - "{{ gitpush_workdir_path }}"
+#  when: gitpush_user and whoami_result.stdout != gitpush_user
