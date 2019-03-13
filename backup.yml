@@ -15,9 +15,7 @@
     router_backup_dir: backup 
     git_remote_repo_path: 'git@github.com:sheeshkebab/iag-configs.git' 
     git_checkout_location: /tmp/iag-configs
-
-  #roles:
-  #  - role: ansible-gitpull-deploy
+    tower_job_template_id: 0 
 
   tasks:
 
@@ -25,8 +23,11 @@
       local_action:
         module: shell
         _raw_params: "command echo \"{{ private_key_content }}\" | ssh-add -"
+      when: tower_job_template_id > 0 
 
-    - name: copy deployment private key
+    # ive used id_rsa below because it gets used by default.
+    # Otherwise we would also need to define an ssh config file for locating the right key to use.
+    - name: Deploy github private key
       copy:
         content: "{{private_key_content}}"
         dest: "~/.ssh/id_rsa"
@@ -34,11 +35,12 @@
         group: awx 
         mode: 0600
       no_log: true
+      when: tower_job_template_id > 0
 
-#    - name: Test the PRIVATE KEY can give us access to github 
-#      local_action: shell ssh -i ~/.ssh/git-hub -T git@github.com
-#      ignore_errors: true
-#      register: github_access_ssh
+    - name: Test the PRIVATE KEY can give us access to github 
+      local_action: shell ssh -i ~/.ssh/git-hub -T git@github.com
+      ignore_errors: true
+      register: github_access_ssh
 
     - name: Import Role - GitPull
       import_role: 
