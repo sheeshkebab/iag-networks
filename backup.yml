@@ -26,6 +26,15 @@
         module: shell
         _raw_params: "command echo \"{{ private_key_content }}\" | ssh-add -"
 
+    - name: copy deployment private key
+      copy:
+        content: "{{private_key_content}}"
+        dest: "~/.ssh/id_rsa"
+        owner: awx 
+        group: awx 
+        mode: 0600
+      no_log: true
+
 #    - name: Test the PRIVATE KEY can give us access to github 
 #      local_action: shell ssh -i ~/.ssh/git-hub -T git@github.com
 #      ignore_errors: true
