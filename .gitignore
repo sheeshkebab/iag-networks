@@ -5,3 +5,4 @@ ansible.cfg
 ansible
 backup
 *.retry
+.vault_pass

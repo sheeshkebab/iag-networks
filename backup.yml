@@ -1,6 +1,10 @@
 ---
 - name: BACKUP ROUTER CONFIGURATIONS
   hosts: cisco
+  pre_tasks:
+    - include_vars:
+        file: 'vault.yml'
+  #no_log: true
   connection: network_cli
   gather_facts: no
   vars:
@@ -20,6 +24,20 @@
     - role: ansible-gitpull-deploy
 
   tasks:
+
+    - name: Add the PRIVATE KEY used for github authentication to ssh-agent
+      local_action:
+        module: shell
+        _raw_params: "command echo \"{{ private_key_content }}\" | ssh-add -"
+
+    - name: Test the PRIVATE KEY can give us access to github 
+      local_action: shell ssh -i ~/.ssh/git-hub -T git@github.com
+      ignore_errors: true
+      register: github_access_ssh
+
+#    - name: Debug ssh access
+#      debug:
+#        msg: "{{ github_access_ssh }}"
 
     - name: BACKUP THE CONFIG
       ios_config:
@@ -46,7 +64,7 @@
         regexp: 'Current configuration.*'
         state: absent  
 
-    - name: ADD BACKUP FILE TO VERSION CONTROL
+    - name: ADD BACKUP TO LOCAL VERSION CONTROL
       copy:
         src: "./{{router_backup_dir}}/{{inventory_hostname}}.config" 
         dest: "{{ git_checkout_location }}"

@@ -15,7 +15,7 @@
 #  loop_control:
 #    loop_var: item_key
 
-- name: Ensure that we have something to GitPus
+- name: Ensure that we have something to GitPush
   local_action:
     module: shell
     _raw_params: "command git --git-dir=\"{{ gitpush_repo_path }}\" --work-tree=\"{{ git_checkout_location }}\" status"
@@ -26,7 +26,7 @@
   debug:
     msg: "{{ gitchanges }}"
 
-  # Exit if there are no uncommittted files or if there are no commits needed upstream
+# Exit if there are no uncommittted files or if there are no commits needed upstream
 - name: Exit if nothing to commit 
   fail: msg="Nothing to commit"
   when: gitchanges.stdout == "# On branch master\nnothing to commit, working directory clean"
