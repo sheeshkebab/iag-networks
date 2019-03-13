@@ -4,6 +4,17 @@
   pre_tasks:
     - include_vars:
         file: 'vault.yml'
+
+    - name: Add the PRIVATE KEY used for github authentication to ssh-agent
+      local_action:
+        module: shell
+        _raw_params: "command echo \"{{ private_key_content }}\" | ssh-add -"
+
+    - name: Test the PRIVATE KEY can give us access to github
+      local_action: shell ssh -i ~/.ssh/git-hub -T git@github.com
+      ignore_errors: true
+      register: github_access_ssh
+
   #no_log: true
   connection: network_cli
   gather_facts: no
