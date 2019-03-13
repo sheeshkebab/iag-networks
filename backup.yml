@@ -4,35 +4,20 @@
   pre_tasks:
     - include_vars:
         file: 'vault.yml'
-
-    - name: Add the PRIVATE KEY used for github authentication to ssh-agent
-      local_action:
-        module: shell
-        _raw_params: "command echo \"{{ private_key_content }}\" | ssh-add -"
-
-    - name: Test the PRIVATE KEY can give us access to github
-      local_action: shell ssh -i ~/.ssh/git-hub -T git@github.com
-      ignore_errors: true
-      register: github_access_ssh
-
   #no_log: true
   connection: network_cli
   gather_facts: no
   vars:
-    #gitpush_ssh_keys: []
-    #gitpush_local_repo_path: iag-configs/.git
     gitpush_repo_path: /tmp/iag-configs/.git/
-    #gitpush_workdir_path: /var/tmp/backups
     become: false
     gitpush_user: ansible
-    #gitpush_additional_params: '--force'
     notify: null
     router_backup_dir: backup 
     git_remote_repo_path: 'git@github.com:sheeshkebab/iag-configs.git' 
     git_checkout_location: /tmp/iag-configs
 
-  roles:
-    - role: ansible-gitpull-deploy
+  #roles:
+  #  - role: ansible-gitpull-deploy
 
   tasks:
 
@@ -45,6 +30,10 @@
       local_action: shell ssh -i ~/.ssh/git-hub -T git@github.com
       ignore_errors: true
       register: github_access_ssh
+
+    - name: Import Role - GitPull
+      import_role: 
+        name: ansible-gitpull-deploy
 
 #    - name: Debug ssh access
 #      debug:
