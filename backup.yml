@@ -13,7 +13,7 @@
     gitpush_user: ansible
     notify: null
     router_backup_dir: backup 
-    git_remote_repo_path: 'git@github.com:sheeshkebab/iag-configs.git' 
+    git_remote_repo_path: 'git@github.com:sheeshkebab/demo-router-configs.git' 
     git_checkout_location: /tmp/iag-configs
     tower_job_template_id: 0 
 
