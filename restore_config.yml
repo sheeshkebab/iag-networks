@@ -59,7 +59,7 @@
       - name: Setting fact with inventory hostname so we can ssh on the new config
         set_fact:
           #dest_host: "{{ hostvars[inventory_hostname].ansible_host }}" 
-          dest_host: "{{ hostvars[inventory_hostname] }}.inventory_hostname" 
+          dest_host: "{{ inventory_hostname }}" 
 
       - name: COPY RUNNING CONFIG TO ROUTER
         command: scp ./backup/{{inventory_hostname}}.config {{dest_host}}:/{{inventory_hostname}}.config
