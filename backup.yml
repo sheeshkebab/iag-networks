@@ -88,8 +88,8 @@
     become: false
     gitpush_user: ansible
     notify: null
-    git_checkout_location: /tmp/iag-configs
-    git_remote_repo_path: 'git@github.com:sheeshkebab/iag-configs.git'
+    git_checkout_location: /tmp/demo-router-configs
+    git_remote_repo_path: 'git@github.com:sheeshkebab/demo-router-configs.git'
 
   roles:
     - role: ansible-gitpush-deploy
