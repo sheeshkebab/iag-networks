@@ -6,6 +6,15 @@
 
   vars:
     router_backup_dir: backup 
+    become: false
+    gitpush_user: ansible
+    notify: null
+    git_checkout_location: backup 
+    git_remote_repo_path: 'git@github.com:sheeshkebab/demo-router-configs.git'
+
+  roles:
+    - role: ansible-gitpull-deploy
+
 
   tasks:
 
@@ -21,6 +30,7 @@
       - name: RENAME BACKUP
         copy:
           src: "{{config_output.backup_path}}"
+          #dest: "./{{router_backup_dir}}/{{inventory_hostname}}.config"
           dest: "./{{router_backup_dir}}/{{inventory_hostname}}.config"
 
       - name: REMOVE NON CONFIG LINES
