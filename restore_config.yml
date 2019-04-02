@@ -53,7 +53,7 @@
         when: ansible_network_os == 'ios'
   
       - name: debug inventory hostname
-          var: "{{ hostvars[inventory_hostname] }}" 
+          msg: "{{ hostvars[inventory_hostname] }}" 
 
       - name: Setting fact with inventory hostname so we can ssh on the new config
         set_fact:
